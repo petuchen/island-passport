@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1 (2026-10-26)
+
+- Badge: no version number on it (it was stuck at 1.0), a Chinese badge (`badge/island-passport-zh.svg`), and a README
+  that puts the self-hosted snippet first, linking to github.com/petuchen/island-passport.
+
 ## 1.3.0 (2026-10-26)
 
 - Removed the `land` mode and its vehicles (train, tram, bus, car, bicycle, scooter, cable car, walking): islands are

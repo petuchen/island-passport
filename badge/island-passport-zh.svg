@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="94" height="28" viewBox="0 0 94 28" role="img" aria-label="小島護照" lang="zh-Hant">
+  <title>小島護照</title>
+  <rect x="0.75" y="0.75" width="92.5" height="26.5" rx="13.25" fill="#FFFCF6" stroke="#2C7A80" stroke-width="1.5"/>
+  <circle cx="16" cy="14" r="9" fill="#2C7A80"/>
+  <path d="M11.5 15.5l9-4-1.6 3 1.6 1.6-1.2.6-1.8-1.1-3.2 1.4-.4 1.8-1 .4.1-2.2z" fill="#FFFCF6"/>
+  <text x="32" y="18.5" font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang TC', 'Noto Sans TC', sans-serif" font-size="12.5" font-weight="700" fill="#1E292D">小島護照</text>
+</svg>

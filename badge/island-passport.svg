@@ -1,8 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="168" height="28" viewBox="0 0 168 28" role="img" aria-label="Island Passport">
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="28" viewBox="0 0 140 28" role="img" aria-label="Island Passport" lang="en">
   <title>Island Passport</title>
-  <rect width="168" height="28" rx="14" fill="#FFFCF6" stroke="#2C7A80" stroke-width="1.5"/>
+  <rect x="0.75" y="0.75" width="138.5" height="26.5" rx="13.25" fill="#FFFCF6" stroke="#2C7A80" stroke-width="1.5"/>
   <circle cx="16" cy="14" r="9" fill="#2C7A80"/>
   <path d="M11.5 15.5l9-4-1.6 3 1.6 1.6-1.2.6-1.8-1.1-3.2 1.4-.4 1.8-1 .4.1-2.2z" fill="#FFFCF6"/>
-  <text x="32" y="18.5" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#1E292D">Island Passport</text>
-  <text x="134" y="18.5" font-family="system-ui, sans-serif" font-size="11" fill="#5B6B70">1.0</text>
+  <text x="32" y="18.5" font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang TC', 'Noto Sans TC', sans-serif" font-size="12.5" font-weight="700" fill="#1E292D">Island Passport</text>
 </svg>

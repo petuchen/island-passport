@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://island-passport.example/schema/island-passport-1.1.schema.json",
+  "title": "Island Passport 1.1",
+  "description": "Describes an island website and the routes it flies or sails to. See SPEC.md.",
+  "type": "object",
+  "required": [
+    "passport",
+    "name",
+    "url"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "passport": {
+      "enum": [
+        "1.0",
+        "1.1",
+        "1.2"
+      ]
+    },
+    "name": {
+      "$ref": "#/$defs/text"
+    },
+    "url": {
+      "$ref": "#/$defs/url"
+    },
+    "owner": {
+      "$ref": "#/$defs/text"
+    },
+    "description": {
+      "$ref": "#/$defs/text"
+    },
+    "category": {
+      "$ref": "#/$defs/category"
+    },
+    "lang": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      }
+    },
+    "image": {
+      "$ref": "#/$defs/url"
+    },
+    "color": {
+      "$ref": "#/$defs/color"
+    },
+    "arrive": {
+      "$ref": "#/$defs/template"
+    },
+    "ports": {
+      "type": "object",
+      "description": "Which ways your map can receive travellers, and (1.2) which vehicles it can draw.",
+      "properties": {
+        "air": {
+          "type": "boolean"
+        },
+        "sea": {
+          "type": "boolean"
+        },
+        "land": {
+          "type": "boolean"
+        },
+        "space": {
+          "type": "boolean"
+        },
+        "vehicles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vehicle"
+          },
+          "description": "Vehicles this island can show arriving, e.g. [\"helicopter\", \"ferry\"]."
+        }
+      },
+      "additionalProperties": false
+    },
+    "travellers": {
+      "$ref": "#/$defs/travellers"
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    },
+    "contact": {
+      "type": "string",
+      "pattern": "^(https://|mailto:)"
+    },
+    "updated": {
+      "$ref": "#/$defs/date"
+    },
+    "spec": {
+      "$ref": "#/$defs/url"
+    }
+  },
+  "patternProperties": {
+    "^x-": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "url": {
+      "type": "string",
+      "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?/)"
+    },
+    "template": {
+      "type": "string",
+      "pattern": "^https://.*\\{from\\}"
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "category": {
+      "description": "One to five lowercase slugs. Suggested: life, art, design, health, education, policy, government, culture, language, travel, food, tech, ai, science, reading, comics, games, music, community, business, portfolio, news, nature, kids.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/slug"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        }
+      ]
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,23}$"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "text": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
+    "route": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "by": {
+          "enum": [
+            "air",
+            "sea",
+            "land",
+            "space"
+          ],
+          "description": "How you travel there. land and space are 1.2."
+        },
+        "vehicle": {
+          "$ref": "#/$defs/vehicle",
+          "description": "1.2: the vehicle to show, e.g. helicopter, jet, sailboat, train, rocket. Any slug; islands that can't draw it use their own vehicle for `by`."
+        },
+        "kind": {
+          "enum": [
+            "island",
+            "site"
+          ],
+          "default": "island"
+        },
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "owner": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "category": {
+          "$ref": "#/$defs/category"
+        },
+        "color": {
+          "$ref": "#/$defs/color"
+        },
+        "image": {
+          "$ref": "#/$defs/url"
+        },
+        "arrive": {
+          "$ref": "#/$defs/template"
+        },
+        "travellers": {
+          "$ref": "#/$defs/travellers"
+        },
+        "mutual": {
+          "type": "boolean"
+        },
+        "since": {
+          "$ref": "#/$defs/date"
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "by"
+          ]
+        },
+        {
+          "required": [
+            "vehicle"
+          ]
+        }
+      ]
+    },
+    "travellers": {
+      "type": "object",
+      "required": [
+        "accept"
+      ],
+      "properties": {
+        "accept": {
+          "type": "boolean"
+        },
+        "fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "name",
+              "skin",
+              "hair",
+              "outfit",
+              "accessories",
+              "mobility"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "vehicle": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+      "examples": [
+        "plane",
+        "jet",
+        "helicopter",
+        "seaplane",
+        "balloon",
+        "airship",
+        "glider",
+        "boat",
+        "ferry",
+        "sailboat",
+        "speedboat",
+        "yacht",
+        "ship",
+        "canoe",
+        "submarine",
+        "train",
+        "tram",
+        "bus",
+        "car",
+        "bicycle",
+        "scooter",
+        "cablecar",
+        "walk",
+        "rocket",
+        "ufo"
+      ]
+    }
+  }
+}

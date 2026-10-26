@@ -1,0 +1,97 @@
+{
+  "$schema": "https://raw.githubusercontent.com/petuchen/island-passport/main/schema/island-passport.schema.json",
+  "passport": "1.2",
+  "name": {
+    "zh-Hant": "燈塔島",
+    "en": "Lighthouse Island"
+  },
+  "url": "https://lighthouse-island.example/",
+  "owner": "Mei",
+  "description": {
+    "zh-Hant": "一座有燈塔、直升機坪和港口的範例小島。",
+    "en": "An example island with a lighthouse, a helipad and a harbour."
+  },
+  "category": [
+    "nature",
+    "travel"
+  ],
+  "lang": [
+    "zh-Hant",
+    "en"
+  ],
+  "image": "https://lighthouse-island.example/og-image.jpg",
+  "color": "#DB6A41",
+  "arrive": "https://lighthouse-island.example/?from={from}&by={by}&via={via}",
+  "ports": {
+    "air": true,
+    "sea": true,
+    "vehicles": [
+      "helicopter",
+      "ferry"
+    ]
+  },
+  "travellers": {
+    "accept": true,
+    "fields": [
+      "name",
+      "skin",
+      "hair",
+      "outfit",
+      "accessories",
+      "mobility"
+    ]
+  },
+  "updated": "2026-10-26",
+  "routes": [
+    {
+      "url": "https://comet-island.example/island/",
+      "by": "air",
+      "kind": "island",
+      "category": [
+        "science",
+        "art"
+      ],
+      "color": "#E8875A",
+      "name": {
+        "zh-Hant": "彗星島",
+        "en": "Comet Island"
+      },
+      "owner": "Leo",
+      "description": {
+        "zh-Hant": "星星、地圖和小實驗，散落在一座座小島上。",
+        "en": "Stars, maps and small experiments on a little archipelago."
+      },
+      "travellers": {
+        "accept": true,
+        "fields": [
+          "name",
+          "skin",
+          "hair",
+          "outfit",
+          "accessories",
+          "mobility"
+        ]
+      },
+      "mutual": true,
+      "since": "2026-10-26",
+      "vehicle": "helicopter"
+    },
+    {
+      "url": "https://tea-house.example/",
+      "by": "sea",
+      "kind": "site",
+      "category": [
+        "food",
+        "culture"
+      ],
+      "color": "#2E8B57",
+      "name": "Tea House",
+      "owner": "Leo",
+      "description": {
+        "zh-Hant": "海邊的茶館（一般網站）。",
+        "en": "A tea house by the sea (a plain website)."
+      },
+      "vehicle": "ferry"
+    }
+  ]
+}

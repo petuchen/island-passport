@@ -1,0 +1,17 @@
+{
+  "traveller": "1.0",
+  "name": "Isla",
+  "skin": "#E3B48C",
+  "hair": {
+    "style": "bun",
+    "color": "#2B2320"
+  },
+  "outfit": {
+    "color": "#F3B9A5",
+    "accent": "#2C7A80"
+  },
+  "accessories": [
+    "glasses"
+  ],
+  "home": "https://lighthouse-island.example/"
+}

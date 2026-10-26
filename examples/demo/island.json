@@ -1,0 +1,118 @@
+{
+  "passport": "1.2",
+  "name": {
+    "zh-Hant": "示範小島",
+    "en": "Demo Island"
+  },
+  "url": "http://localhost:8766/examples/demo/",
+  "category": [
+    "life"
+  ],
+  "travellers": {
+    "accept": true,
+    "fields": [
+      "name"
+    ]
+  },
+  "routes": [
+    {
+      "url": "https://lighthouse-island.example/",
+      "by": "air",
+      "category": [
+        "nature",
+        "travel"
+      ],
+      "color": "#DB6A41",
+      "name": {
+        "zh-Hant": "燈塔島",
+        "en": "Lighthouse Island"
+      },
+      "owner": "Mei",
+      "description": {
+        "zh-Hant": "有燈塔、直升機坪和港口的小島。",
+        "en": "An island with a lighthouse, a helipad and a harbour."
+      },
+      "travellers": {
+        "accept": true,
+        "fields": [
+          "name",
+          "skin",
+          "hair",
+          "outfit",
+          "accessories",
+          "mobility"
+        ]
+      },
+      "vehicle": "helicopter"
+    },
+    {
+      "url": "https://comet-island.example/island/",
+      "by": "air",
+      "category": [
+        "science",
+        "art"
+      ],
+      "color": "#E8875A",
+      "name": {
+        "zh-Hant": "彗星島",
+        "en": "Comet Island"
+      },
+      "travellers": {
+        "accept": true,
+        "fields": [
+          "name",
+          "skin",
+          "hair",
+          "outfit",
+          "accessories",
+          "mobility"
+        ]
+      },
+      "vehicle": "jet",
+      "owner": "Leo"
+    },
+    {
+      "url": "https://library.example/",
+      "by": "sea",
+      "kind": "site",
+      "category": [
+        "reading",
+        "education"
+      ],
+      "name": {
+        "zh-Hant": "海邊圖書館（範例）",
+        "en": "Seaside Library (example)"
+      }
+    },
+    {
+      "url": "https://valley-village.example/",
+      "by": "land",
+      "vehicle": "train",
+      "name": {
+        "zh-Hant": "山谷村（範例）",
+        "en": "Valley Village (example)"
+      },
+      "category": [
+        "nature"
+      ]
+    },
+    {
+      "url": "https://moon-base.example/",
+      "by": "space",
+      "vehicle": "rocket",
+      "name": {
+        "zh-Hant": "月球基地（範例）",
+        "en": "Moon Base (example)"
+      },
+      "category": [
+        "science"
+      ]
+    }
+  ],
+  "ports": {
+    "air": true,
+    "sea": true,
+    "land": true,
+    "space": true
+  }
+}

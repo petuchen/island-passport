@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://island-passport.example/schema/traveller-card-1.0.schema.json",
+  "title": "Island Passport traveller card 1.0",
+  "description": "A visitor's character in portable terms. Sent in the departure link's fragment as ip-t=<base64url(JSON)>. See SPEC.md §8.",
+  "type": "object",
+  "required": [
+    "traveller"
+  ],
+  "properties": {
+    "traveller": {
+      "const": "1.0"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 16
+    },
+    "skin": {
+      "$ref": "#/$defs/hex"
+    },
+    "hair": {
+      "type": "object",
+      "properties": {
+        "style": {
+          "enum": [
+            "short",
+            "long",
+            "bun",
+            "ponytail",
+            "curly",
+            "braids",
+            "afro",
+            "bob",
+            "bald",
+            "cap",
+            "hat",
+            "headscarf"
+          ]
+        },
+        "color": {
+          "$ref": "#/$defs/hex"
+        }
+      },
+      "additionalProperties": false
+    },
+    "outfit": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/hex"
+        },
+        "accent": {
+          "$ref": "#/$defs/hex"
+        }
+      },
+      "additionalProperties": false
+    },
+    "accessories": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "glasses",
+          "sunglasses",
+          "hat",
+          "scarf",
+          "bag",
+          "mask",
+          "earrings",
+          "headphones"
+        ]
+      }
+    },
+    "mobility": {
+      "enum": [
+        "wheelchair",
+        "cane",
+        "walker"
+      ]
+    },
+    "home": {
+      "type": "string",
+      "pattern": "^https://"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    }
+  }
+}

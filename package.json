@@ -1,0 +1,25 @@
+{
+  "name": "island-passport",
+  "version": "1.2.1",
+  "description": "An open format and drop-in harbour that lets illustrated island websites link to each other by air and sea.",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "harbor",
+    "schema",
+    "tools",
+    "SPEC.md",
+    "SKILL.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/core.test.mjs",
+    "validate": "node tools/validate.mjs",
+    "demo": "python3 -m http.server 8766"
+  },
+  "keywords": [
+    "island",
+    "webring",
+    "three.js",
+    "island-passport"
+  ]
+}

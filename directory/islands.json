@@ -1,0 +1,4 @@
+{
+  "about": "Islands that publish an Island Passport. Add yours with a pull request: one entry, sorted by url. Entries are a snapshot; each island's own /island.json is the source of truth.",
+  "islands": []
+}

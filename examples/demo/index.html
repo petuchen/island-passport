@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Island Passport demo</title>
+  <link rel="island-passport" href="./island.json">
+  <style>body { font: 16px/1.6 system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; background: #F4EFE6; color: #1E292D; }</style>
+</head>
+<body>
+  <h1>示範小島 Demo Island</h1>
+  <p>Any website can join: one script tag adds a ✈ Routes button with a departures board, a take-off animation, and a welcome for travellers who arrive with <code>?from=…&amp;by=…&amp;via=…</code>.</p>
+  <p>Try arriving: <a href="./?from=https%3A%2F%2Flighthouse-island.example%2F&amp;by=air">as a traveller from Lighthouse Island</a>.</p>
+  <p>Any vehicle works (1.2): arrive <a href="./?from=https%3A%2F%2Flighthouse-island.example%2F&amp;by=air&amp;via=helicopter">by helicopter</a>, <a href="./?from=https%3A%2F%2Fvalley-village.example%2F&amp;by=land&amp;via=train">by train</a> or <a href="./?from=https%3A%2F%2Fmoon-base.example%2F&amp;by=space&amp;via=rocket">by rocket</a>.</p>
+  <p>Or <a href="./?from=https%3A%2F%2Flighthouse-island.example%2F&amp;by=air#ip-t=eyJ0cmF2ZWxsZXIiOiIxLjAiLCJuYW1lIjoiSXNsYSIsInNraW4iOiIjRTNCNDhDIiwiaGFpciI6eyJzdHlsZSI6ImJ1biIsImNvbG9yIjoiIzJCMjMyMCJ9LCJvdXRmaXQiOnsiY29sb3IiOiIjRjNCOUE1IiwiYWNjZW50IjoiIzJDN0E4MCJ9LCJhY2Nlc3NvcmllcyI6WyJnbGFzc2VzIl0sImhvbWUiOiJodHRwczovL2xpZ2h0aG91c2UtaXNsYW5kLmV4YW1wbGUvIn0">arrive with a character (a traveller card)</a>: the welcome uses its name, and the return trip carries it home.</p>
+  <!-- the whole integration: -->
+  <script type="module" src="../../harbor/harbor.js" data-passport="./island.json"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "$schema": "../schema/island-passport.schema.json",
+  "passport": "1.2",
+  "name": { "zh-Hant": "交通島", "en": "Transport Island" },
+  "url": "https://transport-island.example/",
+  "description": { "zh-Hant": "一座什麼交通工具都有的範例小島。", "en": "An example island that travels every way it can." },
+  "category": ["travel", "kids"],
+  "ports": { "air": true, "sea": true, "land": true, "space": true, "vehicles": ["helicopter", "jet", "sailboat", "train", "rocket"] },
+  "routes": [
+    { "url": "https://lighthouse-island.example/", "by": "air", "vehicle": "helicopter", "name": { "zh-Hant": "燈塔島", "en": "Lighthouse Island" } },
+    { "url": "https://comet-island.example/island/", "by": "air", "vehicle": "jet", "name": { "zh-Hant": "彗星島", "en": "Comet Island" } },
+    { "url": "https://harbour-town.example/", "by": "sea", "vehicle": "sailboat", "name": "Harbour Town" },
+    { "url": "https://valley-village.example/", "by": "land", "vehicle": "train", "name": "Valley Village" },
+    { "url": "https://moon-base.example/", "by": "space", "vehicle": "rocket", "name": "Moon Base" },
+    { "url": "https://cloud-castle.example/", "by": "air", "vehicle": "balloon", "name": "Cloud Castle" }
+  ]
+}

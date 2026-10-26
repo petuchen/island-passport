@@ -1,0 +1,33 @@
+{
+  "passport": "1.1",
+  "name": "My Island",
+  "url": "https://my-island.example/",
+  "category": [
+    "life"
+  ],
+  "routes": [
+    {
+      "url": "https://lighthouse-island.example/",
+      "by": "air",
+      "name": {
+        "zh-Hant": "燈塔島",
+        "en": "Lighthouse Island"
+      },
+      "category": [
+        "health",
+        "education"
+      ],
+      "travellers": {
+        "accept": true,
+        "fields": [
+          "name",
+          "skin",
+          "hair",
+          "outfit",
+          "accessories",
+          "mobility"
+        ]
+      }
+    }
+  ]
+}

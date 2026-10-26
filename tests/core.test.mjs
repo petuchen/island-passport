@@ -40,7 +40,7 @@ test("readArrival recognises listed islands and offers a return only for them", 
   assert.equal(readArrival(me, loc("https://h/?from=https%3A%2F%2Fa.example%2F&by=plane"), { clean: false }).by, "air");
 });
 test("modes and categories", () => {
-  assert.equal(mode("helicopter"), "air"); assert.equal(mode("ferry"), "sea"); assert.equal(mode("car"), "land"); assert.equal(mode("teleport"), null);
+  assert.equal(mode("helicopter"), "air"); assert.equal(mode("ferry"), "sea"); assert.equal(mode("car"), null); assert.equal(mode("land"), null); assert.equal(mode("teleport"), null);
   assert.deepEqual(categoriesOf({ category: "art" }), ["art"]); assert.equal(categoryLabel("health", "zh-Hant"), "健康"); assert.equal(categoryLabel("knitting", "en"), "knitting");
 });
 test("the example passports validate; broken ones don't", () => {
@@ -102,7 +102,9 @@ test("validateTraveller flags what cleaning would drop", () => {
 test("vehicles (1.2): any vehicle rides along as via, and arrivals get a vehicle to draw", () => {
   const jet = { url: "https://j.example/", by: "air", vehicle: "jet", name: "Jet Island" };
   assert.equal(departUrl(jet, me.url), "https://j.example/?from=" + encodeURIComponent(me.url) + "&by=air&via=jet");
-  assert.equal(departUrl({ url: "https://t.example/", by: "land", vehicle: "train" }, me.url), "https://t.example/?from=" + encodeURIComponent(me.url) + "&by=land&via=train");
+  assert.equal(departUrl({ url: "https://t.example/", by: "sea", vehicle: "sailboat" }, me.url), "https://t.example/?from=" + encodeURIComponent(me.url) + "&by=sea&via=sailboat");
+  const l = readArrival(me, loc("https://h/?from=https%3A%2F%2Fa.example%2F&by=land&via=train"), { clean: false });
+  assert.equal(l.by, "air"); assert.equal(l.vehicle, "train"); /* 1.3: "land" is read as air; an island without a train model draws its plane */
   assert.equal(departUrl({ url: "https://x.example/", arrive: "https://x.example/?o={from}&m={by}&v={via}", vehicle: "balloon", by: "air" }, me.url), "https://x.example/?o=" + encodeURIComponent(me.url) + "&m=air&v=balloon");
   const a = readArrival(me, loc("https://h/?from=https%3A%2F%2Fa.example%2F&by=sea&via=sailboat"), { clean: false });
   assert.equal(a.by, "sea"); assert.equal(a.vehicle, "sailboat");
@@ -113,14 +115,16 @@ test("vehicles (1.2): any vehicle rides along as via, and arrivals get a vehicle
   const d = readArrival(me, loc("https://h/?from=https%3A%2F%2Fa.example%2F&by=air&via=dragon"), { clean: false });
   assert.equal(d.vehicle, "dragon"); /* unknown slugs pass through; islands that can't draw them use their own */
   assert.equal(readArrival(me, loc("https://h/?from=https%3A%2F%2Fa.example%2F&by=air&via=%3Cb%3E"), { clean: false }).vehicle, "plane");
-  assert.equal(vehicleOf({ by: "sea" }), "boat"); assert.equal(vehicleOf({ by: "air", vehicle: "helicopter" }), "helicopter"); assert.equal(modeOf({ vehicle: "bus" }), "land");
+  assert.equal(vehicleOf({ by: "sea" }), "boat"); assert.equal(vehicleOf({ by: "air", vehicle: "helicopter" }), "helicopter"); assert.equal(modeOf({ vehicle: "ferry" }), "sea"); assert.equal(modeOf({ vehicle: "bus" }), "air");
   assert.equal(vehicleMark("rocket"), "🚀"); assert.equal(vehicleMark("dragon", "air"), "✈️"); assert.equal(vehicleLabel("ferry", "zh-Hant"), "渡輪");
-  for (const [slug, [by]] of Object.entries(VEHICLES)) assert.ok(["air", "sea", "land", "space"].includes(by), slug);
+  for (const [slug, [by]] of Object.entries(VEHICLES)) assert.ok(["air", "sea", "space"].includes(by), slug);
   for (const v of Object.values(DEFAULT_VEHICLE)) assert.ok(VEHICLES[v]);
 });
-test("validatePassport (1.2): vehicles, land and space", () => {
-  const base = { passport: "1.2", name: "X", url: "https://x.example/", category: ["art"] };
-  assert.ok(validatePassport({ ...base, routes: [{ url: "https://y.example/", by: "land", vehicle: "train", name: "Y" }], ports: { land: true, vehicles: ["train"] } }).ok);
+test("validatePassport (1.2, 1.3): vehicles and space; land is gone", () => {
+  const base = { passport: "1.3", name: "X", url: "https://x.example/", category: ["art"] };
+  assert.ok(validatePassport({ ...base, routes: [{ url: "https://y.example/", by: "space", vehicle: "rocket", name: "Y" }], ports: { space: true, vehicles: ["rocket"] } }).ok);
+  const land = validatePassport({ ...base, routes: [{ url: "https://y.example/", by: "land", vehicle: "train", name: "Y" }], ports: { land: true } });
+  assert.ok(land.ok); assert.ok(land.warnings.some((m) => /"land" was removed in 1\.3/.test(m))); assert.ok(land.warnings.some((m) => /ports\.land/.test(m)));
   const w = validatePassport({ ...base, routes: [{ url: "https://y.example/", by: "sea", vehicle: "jet", name: "Y" }] });
   assert.ok(w.ok); assert.ok(w.warnings.some((m) => /jet travels by air/.test(m)));
   assert.ok(!validatePassport({ ...base, routes: [{ url: "https://y.example/", by: "air", vehicle: "Big Jet", name: "Y" }] }).ok);

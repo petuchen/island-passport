@@ -1,12 +1,12 @@
 ---
 name: island-passport
-description: Add an Island Passport to a website, so illustrated "island" sites link to each other by air, sea, land or space with any vehicle (helicopter, jet, ferry, sailboat, train, rocket…): publish /island.json, add a departures board (drop-in script or a three.js helipad/airport and harbour), welcome travellers who arrive with ?from=…&by=…&via=…, and carry visitors' characters between islands as traveller cards. Use when someone wants their island or site to connect with other islands, add an airport/harbour/helipad/station/launch pad, join an island webring, let avatars travel between sites, or implement or validate island.json.
+description: Add an Island Passport to a website, so illustrated "island" sites link to each other by air, sea or space with any vehicle (helicopter, jet, balloon, ferry, sailboat, rocket…): publish /island.json, add a departures board (drop-in script or a three.js helipad/airport and harbour), welcome travellers who arrive with ?from=…&by=…&via=…, and carry visitors' characters between islands as traveller cards. Use when someone wants their island or site to connect with other islands, add an airport/harbour/helipad/launch pad, join an island webring, let avatars travel between sites, or implement or validate island.json.
 ---
 
 # Island Passport
 
 Island Passport links island-style websites: each site publishes a small `/island.json` (its passport) listing the
-islands it travels to; a departures board sends visitors off with `?from=<your url>&by=air|sea|land|space&via=<vehicle>`; the receiving island
+islands it travels to; a departures board sends visitors off with `?from=<your url>&by=air|sea|space&via=<vehicle>`; the receiving island
 welcomes them and offers a trip home if it lists them too. The full rules are in `SPEC.md` next to this file. Read
 it before writing code; this page is the working procedure.
 
@@ -39,9 +39,9 @@ Ask only for what the code can't tell you, in one short message:
   culture, language, travel, food, tech, ai, science, reading, comics, games, music, community, business, portfolio,
   news, nature, kids)
 - which places to link to, and for each whether it's an island (speaks Island Passport) or a plain site, the mode
-  (air, sea, land or space; common: air to friends' islands, sea to their own other sites) and, if they like, the
-  vehicle (`helicopter`, `jet`, `balloon`, `ferry`, `sailboat`, `train`, `bus`, `rocket`…; see SPEC.md §9). With a
-  vehicle, use `"passport": "1.2"` and keep `by` too.
+  (air, sea or space; there is no land travel between islands; common: air to friends' islands, sea to their own other sites) and, if they like, the
+  vehicle (`helicopter`, `jet`, `balloon`, `ferry`, `sailboat`, `rocket`…; see SPEC.md §9). With a
+  vehicle, use `"passport": "1.3"` and keep `by` too.
 - optionally a contact link for people who want a route
 
 For each destination, copy a snapshot into the route: name, owner, one line, categories, colour. If a destination
@@ -72,10 +72,10 @@ Options: `data-lang`, `data-position="bottom-left"`, `data-label`, `data-button=
 **B. A three.js island:** copy `harbor/passport-core.js` and `harbor/three-harbor.js`, and build the port in the
 scene, in the island's own style:
 
-1. Choose the spots: a pad or runway for air, a dock for sea, a station for land, a launch pad for space. Reuse what's
+1. Choose the spots: a pad or runway for air, a dock for sea, a launch pad for space. Reuse what's
    on the map; otherwise add a small islet.
 2. Make the vehicles with your palette (`makeVehicle(THREE, slug, colors, by)` builds any suggested vehicle, or the
-   mode's everyday one; or call `makeHelicopter`, `makeJet`, `makeBoat`, `makeSailboat`, `makeTrain`, `makeRocket`…)
+   mode's everyday one; or call `makeHelicopter`, `makeJet`, `makeBoat`, `makeSailboat`, `makeBalloon`, `makeRocket`…)
    and park them there; call their `tick(dt, …)` from the render loop so rotors spin and boats bob (only while the
    scene is animating).
 3. Add a clickable label or pin at each port that opens a **departures board** drawn from your passport's `routes`:
@@ -113,8 +113,8 @@ If the site lets visitors make a character, let it travel (SPEC.md §8):
 
 - Loading the page contacts no other island. The board comes from your own passport's snapshots.
 - Departures are real links (`<a href>`), keyboard-usable, and work in a new tab.
-- `from` is checked (https, or http on localhost) and only its origin and path are used; `by` is `air`, `sea`, `land`
-  or `space`; `via` is a slug, drawn if you can, else your own vehicle for `by`.
+- `from` is checked (https, or http on localhost) and only its origin and path are used; `by` is `air`, `sea` or
+  `space`; `via` is a slug, drawn if you can, else your own vehicle for `by`.
 - A return link appears only for islands in your own `routes`. Nothing about arrivals is stored or logged.
 - `from`, `by` and `via` are removed from the address bar after reading them.
 - Animations are short and skipped with reduced motion.
@@ -127,7 +127,7 @@ If the site lets visitors make a character, let it travel (SPEC.md §8):
 - Open the board; every route's link has the right `from` and `by` (plain sites get no parameters).
 - Click a departure: it animates and lands on the destination; with reduced motion it goes straight there.
 - Open `/?from=<an island you list>&by=air`: welcome with its name and a working return link.
-- Open `/?from=<an island you list>&by=land&via=train`: a train (or your land vehicle) brings them in.
+- Open `/?from=<an island you list>&by=sea&via=sailboat`: a sailboat (or your own boat) brings them in.
 - Open `/?from=https://example.com/&by=sea`: welcome by host name, no link. `/?from=javascript:alert(1)`: nothing.
 - After an arrival the address bar no longer has `from`/`by`.
 - Watch the network panel on load: no requests to other islands.

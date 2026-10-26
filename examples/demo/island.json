@@ -1,5 +1,5 @@
 {
-  "passport": "1.2",
+  "passport": "1.3",
   "name": {
     "zh-Hant": "示範小島",
     "en": "Demo Island"
@@ -85,15 +85,15 @@
       }
     },
     {
-      "url": "https://valley-village.example/",
-      "by": "land",
-      "vehicle": "train",
+      "url": "https://cloud-castle.example/",
+      "by": "air",
+      "vehicle": "balloon",
       "name": {
-        "zh-Hant": "山谷村（範例）",
-        "en": "Valley Village (example)"
+        "zh-Hant": "雲之城（範例）",
+        "en": "Cloud Castle (example)"
       },
       "category": [
-        "nature"
+        "art"
       ]
     },
     {
@@ -112,7 +112,6 @@
   "ports": {
     "air": true,
     "sea": true,
-    "land": true,
     "space": true
   }
 }

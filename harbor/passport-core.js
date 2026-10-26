@@ -1,11 +1,12 @@
-// Island Passport core, v1.2: read a passport, build departure links, read arrivals, carry traveller cards, check a passport.
+// Island Passport core, v1.3: read a passport, build departure links, read arrivals, carry traveller cards, check a passport.
 // No dependencies, no network requests, nothing stored. Works in browsers and in Node (validation).
 // Spec: SPEC.md in https://github.com/petuchen/island-passport
 
-export const PASSPORT_VERSION = "1.2";
-export const PASSPORT_VERSIONS = ["1.0", "1.1", "1.2"];
-/* travel modes (`by`): how the traveller moves. land and space are 1.2; older readers treat them as air */
-export const TRAVEL = ["air", "sea", "land", "space"];
+export const PASSPORT_VERSION = "1.3";
+export const PASSPORT_VERSIONS = ["1.0", "1.1", "1.2", "1.3"];
+/* travel modes (`by`): how the traveller moves between islands. space is 1.2; older readers treat it as air.
+   ("land" was a 1.2 mode and was removed in 1.3: islands are surrounded by water; readers treat it as air) */
+export const TRAVEL = ["air", "sea", "space"];
 /* Suggested vehicles (`vehicle`, 1.2; SPEC.md §9): any lowercase slug is allowed, these have a mode, a mark and labels.
    An island draws the vehicle if it can, otherwise its own vehicle for that mode. */
 export const VEHICLES = {
@@ -14,13 +15,11 @@ export const VEHICLES = {
   glider: ["air", "🪁", "滑翔機", "Glider"],
   boat: ["sea", "⛴️", "船", "Boat"], ferry: ["sea", "⛴️", "渡輪", "Ferry"], sailboat: ["sea", "⛵", "帆船", "Sailboat"], speedboat: ["sea", "🚤", "快艇", "Speedboat"],
   yacht: ["sea", "🛥️", "遊艇", "Yacht"], ship: ["sea", "🚢", "郵輪", "Ship"], canoe: ["sea", "🛶", "獨木舟", "Canoe"], submarine: ["sea", "🌊", "潛水艇", "Submarine"],
-  train: ["land", "🚆", "火車", "Train"], tram: ["land", "🚋", "電車", "Tram"], bus: ["land", "🚌", "公車", "Bus"], car: ["land", "🚗", "汽車", "Car"],
-  bicycle: ["land", "🚲", "腳踏車", "Bicycle"], scooter: ["land", "🛵", "機車", "Scooter"], cablecar: ["land", "🚡", "纜車", "Cable car"], walk: ["land", "🚶", "步行", "On foot"],
   rocket: ["space", "🚀", "火箭", "Rocket"], ufo: ["space", "🛸", "飛碟", "UFO"],
 };
 /* each mode's everyday vehicle, used when a route names none or a vehicle an island can't draw */
-export const DEFAULT_VEHICLE = { air: "plane", sea: "boat", land: "train", space: "rocket" };
-export const MODE_MARK = { air: "✈️", sea: "⛴️", land: "🚆", space: "🚀" };
+export const DEFAULT_VEHICLE = { air: "plane", sea: "boat", space: "rocket" };
+export const MODE_MARK = { air: "✈️", sea: "⛴️", space: "🚀" };
 const SLUG = /^[a-z0-9][a-z0-9-]{0,31}$/;
 /* a travel mode from a mode or a vehicle name ("helicopter" → "air"), or null */
 export const mode = (v) => (TRAVEL.includes(v) ? v : VEHICLES[v]?.[0] || null);
@@ -99,7 +98,7 @@ export function departUrl(route, from, by = modeOf(route), opts = {}) {
 }
 const withFragment = (url, t) => { const u = new URL(url), h = u.hash.replace(/^#/, ""); u.hash = (h ? h + "&" : "") + "ip-t=" + t; return u.toString(); };
 
-/* Read ?from=…&by=air|sea|land|space[&via=vehicle] on arrival. Returns null when nobody arrived, otherwise
+/* Read ?from=…&by=air|sea|space[&via=vehicle] on arrival. Returns null when nobody arrived, otherwise
    { from, host, by, vehicle, route } where route is one of YOUR routes when the traveller came from an island you list
    (only then is it safe to offer a "return trip" link), and vehicle is what they came in (draw it if you can, else your
    own vehicle for `by`). Removes the parameters from the address bar. */
@@ -242,8 +241,9 @@ export function validatePassport(p) {
   if (p.color != null && !hex(p.color)) errors.push("color: a #RRGGBB hex colour");
   if (p.lang != null && !(Array.isArray(p.lang) && p.lang.every((x) => typeof x === "string"))) errors.push("lang: an array of language tags");
   if (p.arrive != null && !(typeof p.arrive === "string" && p.arrive.includes("{from}") && isUrl(p.arrive.replace(/\{(from|by)\}/g, "x")))) errors.push("arrive: an https URL template containing {from} (and optionally {by})");
-  if (p.ports != null && (typeof p.ports !== "object" || Object.entries(p.ports).some(([k, v]) => k === "vehicles" ? !(Array.isArray(v) && v.every((x) => typeof x === "string" && SLUG.test(x))) : !TRAVEL.includes(k) || typeof v !== "boolean"))) errors.push("ports: { air, sea, land, space: boolean, vehicles: [\"helicopter\", \"ferry\", …] }");
-  if (p.ports && ["land", "space"].some((k) => k in p.ports) || p.ports?.vehicles) need12("ports: land, space and vehicles");
+  if (p.ports != null && (typeof p.ports !== "object" || Object.entries(p.ports).some(([k, v]) => k === "vehicles" ? !(Array.isArray(v) && v.every((x) => typeof x === "string" && SLUG.test(x))) : !(TRAVEL.includes(k) || k === "land") || typeof v !== "boolean"))) errors.push("ports: { air, sea, space: boolean, vehicles: [\"helicopter\", \"ferry\", …] }");
+  if (p.ports && "land" in p.ports) warnings.push("ports.land: land travel was removed in 1.3 (islands are surrounded by water); drop it");
+  if (p.ports && "space" in p.ports || p.ports?.vehicles) need12("ports: space and vehicles");
   if (p.contact != null && !(typeof p.contact === "string" && (isUrl(p.contact) || /^mailto:/.test(p.contact)))) errors.push("contact: an https URL or a mailto: link");
   if (p.updated != null && !/^\d{4}-\d{2}-\d{2}$/.test(p.updated)) errors.push("updated: a date, YYYY-MM-DD");
   if (p.routes != null && !Array.isArray(p.routes)) errors.push("routes: an array");
@@ -256,9 +256,10 @@ export function validatePassport(p) {
     if (r.vehicle != null && !(typeof r.vehicle === "string" && SLUG.test(r.vehicle))) errors.push(`${at}.vehicle: a lowercase slug, e.g. "helicopter", "jet", "sailboat", "train"`);
     else if (r.vehicle != null) { need12(`${at}.vehicle`); if (!VEHICLES[r.vehicle]) warnings.push(`${at}.vehicle: "${r.vehicle}" isn't a suggested vehicle; islands that can't draw it use their own ${modeOf(r)} vehicle`); }
     if (r.by == null && mode(r.vehicle)) warnings.push(`${at}.by: add "by": "${mode(r.vehicle)}" so 1.0 and 1.1 readers know the way you travel`);
-    else if (!TRAVEL.includes(r.by)) (mode(r.by) ? warnings : errors).push(mode(r.by) ? `${at}.by: write "by": "${mode(r.by)}", "vehicle": "${r.by}" instead of "${r.by}"` : `${at}.by: "air", "sea", "land" or "space"`);
+    else if (r.by === "land") warnings.push(`${at}.by: "land" was removed in 1.3 (islands are surrounded by water); readers treat it as "air". Use "air" or "sea"`);
+    else if (!TRAVEL.includes(r.by)) (mode(r.by) ? warnings : errors).push(mode(r.by) ? `${at}.by: write "by": "${mode(r.by)}", "vehicle": "${r.by}" instead of "${r.by}"` : `${at}.by: "air", "sea" or "space"`);
     else if (r.vehicle && VEHICLES[r.vehicle] && VEHICLES[r.vehicle][0] !== r.by) warnings.push(`${at}.vehicle: a ${r.vehicle} travels by ${VEHICLES[r.vehicle][0]}, not ${r.by}`);
-    if (["land", "space"].includes(r.by)) need12(`${at}.by: "${r.by}"`);
+    if (r.by === "space") need12(`${at}.by: "space"`);
     if (r.kind != null && !KINDS.includes(r.kind)) errors.push(`${at}.kind: "island" or "site"`);
     if (r.name != null && !isText(r.name)) errors.push(`${at}.name: a string or a language map`);
     if (r.name == null) warnings.push(`${at}.name: add a snapshot of the name, so your board works without fetching their passport`);

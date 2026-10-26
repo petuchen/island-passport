@@ -1,9 +1,9 @@
-# Island Passport ✈️ ⛴️ 🚆 🚀
+# Island Passport ✈️ ⛴️ 🚀
 
 **Let illustrated "island" websites visit each other.**
 
 Each site publishes a small `island.json` that lists the islands it travels to. A visitor picks a destination on a
-departures board, a helicopter lifts off (or a ferry sails, a train pulls out, a rocket launches), and they arrive on
+departures board, a helicopter lifts off (or a ferry sails, a balloon floats up, a rocket launches), and they arrive on
 the other island, which welcomes them and offers a trip home.
 
 > Inspired by [HEART 政策島](https://puma.taipei/heart-island).
@@ -18,7 +18,7 @@ the other island, which welcomes them and offers a trip home.
 |---|---|
 | **What you add** | One file, `/island.json`, and one script tag (or your own three.js scene) |
 | **How islands link** | Plain links with `?from=<your island>&by=<mode>&via=<vehicle>` |
-| **Ways to travel** | Air, sea, land or space, with any vehicle: helicopter, jet, balloon, ferry, sailboat, train, bus, rocket… |
+| **Ways to travel** | Air, sea or space, with any vehicle: helicopter, jet, balloon, ferry, sailboat, rocket… |
 | **Characters** | A visitor's character can travel along and go home again (optional) |
 | **Privacy** | No requests to other sites on load, no tracking, nothing stored |
 | **Dependencies** | None |
@@ -65,7 +65,7 @@ Put `island.json` at your site's root. Start from [`examples/minimal.json`](exam
 
 ```json
 {
-  "passport": "1.2",
+  "passport": "1.3",
   "name": { "zh-Hant": "我的小島", "en": "My Island" },
   "url": "https://my-island.example/",
   "category": ["life", "art"],
@@ -119,7 +119,7 @@ if (a) {
 
 Send your `island.json` address to the islands you link to. Once they list you, mark that route `"mutual": true`.
 
-## Travel any way you like (1.2)
+## Travel any way you like
 
 `by` says **how** the traveller moves, so every island knows where to receive them. `vehicle` says **what** to
 draw. An island that can't draw that vehicle uses its own one for the same mode.
@@ -128,11 +128,12 @@ draw. An island that can't draw that vehicle uses its own one for the same mode.
 |---|---|---|
 | ✈️ `air` | runway, helipad, balloon field | `plane` · `jet` · `helicopter` · `seaplane` · `balloon` · `airship` · `glider` |
 | ⛴️ `sea` | harbour, pier | `boat` · `ferry` · `sailboat` · `speedboat` · `yacht` · `ship` · `canoe` · `submarine` |
-| 🚆 `land` | station, bus stop | `train` · `tram` · `bus` · `car` · `bicycle` · `scooter` · `cablecar` · `walk` |
 | 🚀 `space` | launch pad | `rocket` · `ufo` |
 
 Any other lowercase slug works too (`"vehicle": "dragon"`); islands that can't draw it fall back to the mode's
-everyday vehicle (plane, boat, train, rocket).
+everyday vehicle (plane, boat, rocket).
+
+There is no land travel: every island is surrounded by water, so you get there by air or by sea (or from space).
 
 ```mermaid
 flowchart LR
@@ -194,11 +195,11 @@ and validate the passport, add the harbour (drop-in or three.js) and test it.
 
 | Path | What it is |
 |---|---|
-| [`SPEC.md`](SPEC.md) | The format, version 1.2 |
+| [`SPEC.md`](SPEC.md) | The format, version 1.3 |
 | [`schema/`](schema/) | JSON Schemas for passports and traveller cards |
 | [`harbor/passport-core.js`](harbor/passport-core.js) | Links, arrivals, cards, vehicles, validation. No dependencies |
 | [`harbor/harbor.js`](harbor/harbor.js) | Drop-in harbour for any website |
-| [`harbor/three-harbor.js`](harbor/three-harbor.js) | three.js vehicles (helicopter, jet, ferry, sailboat, train, rocket…), paths and the `Traveller` animator |
+| [`harbor/three-harbor.js`](harbor/three-harbor.js) | three.js vehicles (helicopter, jet, balloon, ferry, sailboat, rocket…), paths and the `Traveller` animator |
 | [`tools/validate.mjs`](tools/validate.mjs) | Command-line validator |
 | [`tests/`](tests/) | `npm test` |
 | [`examples/`](examples/) | Minimal, full and all-vehicles passports, a traveller card, and a demo page |

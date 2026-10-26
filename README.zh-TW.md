@@ -1,8 +1,8 @@
-# Island Passport 小島護照 ✈️ ⛴️ 🚆 🚀
+# Island Passport 小島護照 ✈️ ⛴️ 🚀
 
 **讓插畫風「小島網站」互相拜訪。**
 
-每個網站放一個小小的 `island.json`，寫下自己會去哪些小島。訪客在出發看板上選一個目的地，直升機起飛（或渡輪出港、火車出站、
+每個網站放一個小小的 `island.json`，寫下自己會去哪些小島。訪客在出發看板上選一個目的地，直升機起飛（或渡輪出港、熱氣球升空、
 火箭發射），就抵達對方的小島；對方會歡迎他們，也提供回程。
 
 > 靈感來自 [HEART 政策島](https://puma.taipei/heart-island)。
@@ -17,7 +17,7 @@
 |---|---|
 | **要加什麼** | 一個檔案 `/island.json`，加一行 script（或用你自己的 three.js 場景） |
 | **小島怎麼連** | 一般連結，帶上 `?from=<你的島>&by=<方式>&via=<交通工具>` |
-| **怎麼旅行** | 空路、海路、陸路或太空，交通工具隨你：直升機、噴射機、熱氣球、渡輪、帆船、火車、公車、火箭… |
+| **怎麼旅行** | 空路、海路或太空，交通工具隨你：直升機、噴射機、熱氣球、渡輪、帆船、火箭… |
 | **角色** | 訪客的角色可以一起旅行，也能帶回家（選用） |
 | **隱私** | 載入時不連到其他網站、不追蹤、不儲存任何資料 |
 | **相依套件** | 沒有 |
@@ -63,7 +63,7 @@ flowchart LR
 
 ```json
 {
-  "passport": "1.2",
+  "passport": "1.3",
   "name": { "zh-Hant": "我的小島", "en": "My Island" },
   "url": "https://my-island.example/",
   "category": ["life", "art"],
@@ -116,7 +116,7 @@ if (a) {
 
 把你的 `island.json` 網址傳給你連過去的小島。對方把你加進航線後，在那條航線寫 `"mutual": true`（雙向航線）。
 
-## 想怎麼去都可以（1.2）
+## 想怎麼去都可以
 
 `by` 說**怎麼**移動，讓每座島知道要在哪裡迎接；`vehicle` 說要**畫什麼**。畫不出那種交通工具的島，就用自己同一種方式的交通工具。
 
@@ -124,10 +124,11 @@ if (a) {
 |---|---|---|
 | ✈️ `air` 空路 | 跑道、直升機坪、熱氣球場 | `plane` 飛機 · `jet` 噴射機 · `helicopter` 直升機 · `seaplane` 水上飛機 · `balloon` 熱氣球 · `airship` 飛艇 · `glider` 滑翔機 |
 | ⛴️ `sea` 海路 | 港口、碼頭 | `boat` 船 · `ferry` 渡輪 · `sailboat` 帆船 · `speedboat` 快艇 · `yacht` 遊艇 · `ship` 郵輪 · `canoe` 獨木舟 · `submarine` 潛水艇 |
-| 🚆 `land` 陸路 | 車站、公車站 | `train` 火車 · `tram` 電車 · `bus` 公車 · `car` 汽車 · `bicycle` 腳踏車 · `scooter` 機車 · `cablecar` 纜車 · `walk` 步行 |
 | 🚀 `space` 太空 | 發射台 | `rocket` 火箭 · `ufo` 飛碟 |
 
-其他小寫代碼也可以（`"vehicle": "dragon"`）；畫不出來的島會用那種方式的常見交通工具（飛機、船、火車、火箭）。
+其他小寫代碼也可以（`"vehicle": "dragon"`）；畫不出來的島會用那種方式的常見交通工具（飛機、船、火箭）。
+
+沒有陸路：每座島四面都是水，只能飛過去、坐船過去（或從太空來）。
 
 ```mermaid
 flowchart LR
@@ -192,11 +193,11 @@ three.js 都可以），最後測試。
 
 | 路徑 | 內容 |
 |---|---|
-| [`SPEC.md`](SPEC.md) | 格式規格，1.2 版 |
+| [`SPEC.md`](SPEC.md) | 格式規格，1.3 版 |
 | [`schema/`](schema/) | 護照和旅客卡的 JSON Schema |
 | [`harbor/passport-core.js`](harbor/passport-core.js) | 連結、抵達、旅客卡、交通工具、檢查。沒有相依套件 |
 | [`harbor/harbor.js`](harbor/harbor.js) | 任何網站都能用的港口 |
-| [`harbor/three-harbor.js`](harbor/three-harbor.js) | three.js 交通工具（直升機、噴射機、渡輪、帆船、火車、火箭…）、路線和 `Traveller` 動畫 |
+| [`harbor/three-harbor.js`](harbor/three-harbor.js) | three.js 交通工具（直升機、噴射機、熱氣球、渡輪、帆船、火箭…）、路線和 `Traveller` 動畫 |
 | [`tools/validate.mjs`](tools/validate.mjs) | 命令列檢查工具 |
 | [`tests/`](tests/) | `npm test` |
 | [`examples/`](examples/) | 最小、完整、各種交通工具的護照範例，旅客卡範例，和示範頁 |

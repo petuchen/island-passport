@@ -1,5 +1,5 @@
 // Island Passport helpers for three.js islands: low-poly vehicles for every travel mode (plane, jet, helicopter, balloon,
-// airship, ferry, sailboat, train, car, bus, rocket, UFO…), departure / arrival paths, and a small travel animator with an
+// airship, ferry, sailboat, rocket, UFO…), departure / arrival paths, and a small travel animator with an
 // optional follow camera. Pass your own THREE so there's no version clash:
 //   import * as THREE from "three";
 //   import { makeVehicle, departPath, arrivePath, Traveller } from "./three-harbor.js";
@@ -206,30 +206,6 @@ export function makeSailboat(THREE, { hull = "#FFFCF6", stripe = "#2C7A80", sail
   return { group: g, body, tick(dt, t = performance.now() / 1000) { body.position.y = Math.sin(t * 1.5) * 0.025; body.rotation.z = Math.sin(t * 1.0) * 0.06; } };
 }
 
-/* a little train: an engine and two carriages, ~2.6 long; tick turns the wheels */
-export function makeTrain(THREE, { body = "#DB6A41", carriage = "#2C7A80", roof = "#FFF6EC", wheel = "#3A4448", glass = "#9FD5E0" } = {}) {
-  const g = new THREE.Group(), add = part(THREE, g), wheels = [];
-  const car = (z, color, engine) => {
-    add(new THREE.BoxGeometry(0.5, 0.42, 0.78), mat(THREE, color), 0, 0.33, z);
-    add(new THREE.BoxGeometry(0.54, 0.06, 0.82), mat(THREE, roof), 0, 0.57, z);
-    for (const sx of [-0.252, 0.252]) add(new THREE.BoxGeometry(0.01, 0.14, 0.5), mat(THREE, glass, { roughness: 0.2 }), sx, 0.4, z);
-    if (engine) { add(new THREE.CylinderGeometry(0.17, 0.17, 0.08, 14), mat(THREE, roof), 0, 0.33, z + 0.4, Math.PI / 2); add(new THREE.SphereGeometry(0.05, 8, 6), mat(THREE, "#FFE3A3", { emissive: "#FFD27A", emissiveIntensity: 0.8 }), 0, 0.33, z + 0.45); }
-    for (const dz of [-0.24, 0.24]) for (const sx of [-0.24, 0.24]) { const w = add(new THREE.CylinderGeometry(0.09, 0.09, 0.05, 12), mat(THREE, wheel), sx, 0.09, z + dz, 0, 0, Math.PI / 2); wheels.push(w); }
-  };
-  car(0.88, body, true); car(0, carriage); car(-0.88, carriage);
-  return { group: g, tick(dt, speed = 1) { for (const w of wheels) w.rotation.x += dt * 12 * speed; } };
-}
-
-/* a round car (or a bus with { bus: true }), ~1 or ~1.6 long */
-export function makeCar(THREE, { body = "#F2C46B", roof = "#FFF6EC", wheel = "#3A4448", glass = "#9FD5E0", bus = false } = {}) {
-  const g = new THREE.Group(), add = part(THREE, g), L = bus ? 1.6 : 0.95, wheels = [];
-  add(new THREE.BoxGeometry(0.52, bus ? 0.5 : 0.24, L), mat(THREE, body), 0, bus ? 0.38 : 0.24, 0);
-  add(new THREE.BoxGeometry(0.46, bus ? 0.2 : 0.2, bus ? L - 0.1 : L * 0.55), mat(THREE, glass, { roughness: 0.2 }), 0, bus ? 0.55 : 0.44, bus ? 0 : -0.05);
-  add(new THREE.BoxGeometry(0.5, 0.05, bus ? L : L * 0.6), mat(THREE, roof), 0, bus ? 0.66 : 0.56, bus ? 0 : -0.05);
-  for (const dz of [-L * 0.32, L * 0.32]) for (const sx of [-0.26, 0.26]) wheels.push(add(new THREE.CylinderGeometry(0.11, 0.11, 0.07, 12), mat(THREE, wheel), sx, 0.11, dz, 0, 0, Math.PI / 2));
-  return { group: g, tick(dt, speed = 1) { for (const w of wheels) w.rotation.x += dt * 14 * speed; } };
-}
-
 /* a cartoon rocket, ~1.8 tall, with fins and a flame */
 export function makeRocket(THREE, { body = "#FFF6EC", accent = "#DB6A41", glass = "#7FC4D6" } = {}) {
   const g = new THREE.Group(), add = part(THREE, g);
@@ -251,29 +227,29 @@ export function makeUfo(THREE, { body = "#C9D3DA", dome = "#9FD5E0", light = "#F
 }
 
 /* ---------- picking a model and a path for any vehicle ---------- */
-/* how each vehicle moves: "rotor" rises and settles vertically, "plane" rolls and climbs, "water" sails, "ground" drives
-   along the ground, "rocket" launches straight up */
+/* how each vehicle moves: "rotor" rises and settles vertically, "plane" rolls and climbs, "water" sails, "rocket"
+   launches straight up */
 export const VEHICLE_STYLE = { plane: "plane", jet: "plane", seaplane: "plane", glider: "plane", helicopter: "rotor", balloon: "rotor", airship: "rotor", ufo: "rotor",
   boat: "water", ferry: "water", sailboat: "water", speedboat: "water", yacht: "water", ship: "water", canoe: "water", submarine: "water",
-  train: "ground", tram: "ground", bus: "ground", car: "ground", bicycle: "ground", scooter: "ground", cablecar: "ground", walk: "ground", rocket: "rocket" };
+  rocket: "rocket" };
 const MAKERS = { plane: makePlane, glider: makePlane, seaplane: makePlane, jet: makeJet, helicopter: makeHelicopter, balloon: makeBalloon, airship: makeAirship, ufo: makeUfo,
   boat: makeBoat, ferry: makeBoat, ship: makeBoat, yacht: makeBoat, speedboat: makeBoat, canoe: makeSailboat, submarine: makeBoat, sailboat: makeSailboat,
-  train: makeTrain, tram: makeTrain, cablecar: makeTrain, bus: (T, o) => makeCar(T, { body: "#2C7A80", ...o, bus: true }), car: makeCar, bicycle: makeCar, scooter: makeCar, walk: makeCar, rocket: makeRocket };
-const MODE_OF = { rotor: "air", plane: "air", water: "sea", ground: "land", rocket: "space" };
-const FALLBACK = { air: "plane", sea: "boat", land: "train", space: "rocket" };
+  rocket: makeRocket };
+const MODE_OF = { rotor: "air", plane: "air", water: "sea", rocket: "space" };
+const FALLBACK = { air: "plane", sea: "boat", space: "rocket" };
 /* a model for any vehicle slug: its own if we have one, else the everyday vehicle of `by` (or of the slug's mode).
    Returns { group, tick, slug, style } where slug is what was actually built. */
 export function makeVehicle(THREE, slug, colors = {}, by) {
   const s = MAKERS[slug] ? slug : FALLBACK[by || MODE_OF[VEHICLE_STYLE[slug]] || "air"];
   return { ...MAKERS[s](THREE, colors), slug: s, style: VEHICLE_STYLE[s] };
 }
-/* a departure path for a vehicle style from `at` (pad, dock or station) towards `heading` */
+/* a departure path for a vehicle style from `at` (pad, dock or launch pad) towards `heading` */
 export function departPath(THREE, style, at, heading, o = {}) {
   const h = new THREE.Vector3(Math.sin(heading), 0, Math.cos(heading));
   if (style === "rotor") return liftoffPath(THREE, at, heading, o);
   if (style === "plane") return o.runwayEnd ? takeoffPath(THREE, at, o.runwayEnd, heading, o) : takeoffPath(THREE, at, at.clone().addScaledVector(h, 4), heading, o);
   if (style === "rocket") { const up = (y) => at.clone().setY(at.y + y); return new THREE.CatmullRomCurve3([at.clone(), up(2), up(8), up(20).addScaledVector(h, 3), up(60).addScaledVector(h, 20)], false, "centripetal"); }
-  return sailPath(THREE, at, heading, o); /* water and ground */
+  return sailPath(THREE, at, heading, o); /* water */
 }
 /* an arrival path for a vehicle style, ending at `at` */
 export function arrivePath(THREE, style, at, heading, o = {}) {

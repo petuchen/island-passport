@@ -1,21 +1,21 @@
-# Island Passport 1.2
+# Island Passport 1.3
 
 Island Passport is a small open format that lets illustrated "island" websites link to each other with an
-airport, a helipad, a harbour, a station or a launch pad: a visitor picks a destination, a helicopter lifts off, a boat
-leaves the dock, a train pulls out or a rocket launches, and they arrive on the other island, which welcomes them and
+airport, a helipad, a harbour or a launch pad: a visitor picks a destination, a helicopter lifts off, a boat leaves
+the dock or a rocket launches, and they arrive on the other island, which welcomes them and
 offers a trip home.
 
 It has three parts, plus two optional ones:
 
-1. **The passport**: a JSON file at `/island.json` that describes your island and the routes you travel, by air, sea,
-   land or space.
+1. **The passport**: a JSON file at `/island.json` that describes your island and the routes you travel, by air, sea
+   or space.
 2. **Departures**: a link to the other island that says where the traveller came from (`?from=…&by=…`, and from 1.2
    optionally `&via=…`, the vehicle).
 3. **Arrivals**: the other island reads those two parameters, welcomes the traveller, and offers a return
    link only if it lists your island too.
 4. **Traveller cards** (1.1): the visitor's character can travel along, as a small JSON card in the link's
    fragment, to islands that say they accept one (§8).
-5. **Vehicles** (1.2): a route may name any vehicle (a jet, a sailboat, a train, a rocket…); islands draw it if they
+5. **Vehicles** (1.2): a route may name any vehicle (a jet, a balloon, a sailboat, a rocket…); islands draw it if they
    can, or their own vehicle for the same mode (§9).
 
 The key words MUST, SHOULD and MAY are used as in RFC 2119.
@@ -35,7 +35,7 @@ it. The file is public; put nothing private in it.
 
 | Field | Required | Type | Meaning |
 |---|---|---|---|
-| `passport` | yes | `"1.2"` | Format version (`"1.0"` and `"1.1"` are still valid if you don't use newer fields). |
+| `passport` | yes | `"1.3"` | Format version (`"1.0"`, `"1.1"` and `"1.2"` are still valid if you don't use newer fields). |
 | `name` | yes | Text | The island's name, under 60 characters. |
 | `url` | yes | URL | The island's canonical address (its home page). |
 | `owner` | no | Text | Who keeps the island (a person, a group). |
@@ -45,7 +45,7 @@ it. The file is public; put nothing private in it.
 | `image` | no | URL | A preview picture, ideally 1200 × 630 (often your `og:image`). |
 | `color` | no | `#RRGGBB` | An accent colour others may use for your postcard and flag. |
 | `arrive` | no | URL template | How travellers land on your island; see §3. Default: `url` plus `?from={from}&by={by}` (and `&via={via}` when there is a vehicle). It may also contain `{via}` (§9) and `{traveller}` (§8). |
-| `ports` | no | object | `{ "air": true, "sea": true, "land": true, "space": true, "vehicles": ["helicopter", "ferry"] }`: which ways your map can receive travellers (an airport or helipad, a harbour, a station, a launch pad) and, from 1.2, which vehicles you can show arriving. Decorative. |
+| `ports` | no | object | `{ "air": true, "sea": true, "space": true, "vehicles": ["helicopter", "ferry"] }`: which ways your map can receive travellers (an airport or helipad, a harbour, a launch pad) and, from 1.2, which vehicles you can show arriving. Decorative. |
 | `travellers` | no | object | `{ "accept": true, "fields": ["name", "skin", "hair", "outfit", "accessories", "mobility"] }`: you welcome traveller cards and can show these fields (§8). |
 | `routes` | no | Route[] | The places you travel to; see below. |
 | `contact` | no | URL or `mailto:` | Where to ask you to open a route. |
@@ -86,8 +86,8 @@ Each route is a destination on your departures board.
 | Field | Required | Type | Meaning |
 |---|---|---|---|
 | `url` | yes | URL | The destination's address. MUST NOT be your own island. |
-| `by` | yes* | `"air"`, `"sea"`, `"land"` or `"space"` | The travel **mode**. `land` and `space` are 1.2. *Required unless `vehicle` is a suggested vehicle, but SHOULD always be present so 1.0 and 1.1 readers understand the route.* Readers also accept a vehicle name here (`helicopter` = air, `ferry` = sea…). |
-| `vehicle` | no | slug | 1.2: the vehicle to show, e.g. `helicopter`, `jet`, `sailboat`, `train`, `rocket` (§9). Any lowercase slug; islands that can't draw it use their own vehicle for `by`. |
+| `by` | yes* | `"air"`, `"sea"` or `"space"` | The travel **mode**. `space` is 1.2. (1.2 also had `land`; it was removed in 1.3, see §6.) *Required unless `vehicle` is a suggested vehicle, but SHOULD always be present so 1.0 and 1.1 readers understand the route.* Readers also accept a vehicle name here (`helicopter` = air, `ferry` = sea…). |
+| `vehicle` | no | slug | 1.2: the vehicle to show, e.g. `helicopter`, `jet`, `balloon`, `sailboat`, `rocket` (§9). Any lowercase slug; islands that can't draw it use their own vehicle for `by`. |
 | `kind` | no | `"island"` or `"site"` | `island` (default) speaks Island Passport and gets `from`/`by` on arrival; `site` is any other website and gets a plain link. |
 | `name` | no* | Text | A snapshot of the destination's name. *SHOULD be present, so your board works without fetching anything.* |
 | `owner` | no | Text | Snapshot of the destination's owner. |
@@ -112,8 +112,8 @@ still a normal link.
 ### Travel modes
 
 `by` names a **mode** and `vehicle` (1.2) names what to show, so islands can keep their own art: Lighthouse Island
-flies a helicopter from its helipad and sails a ferry from its pier; another island may fly a jet or run a train. A
-traveller who left by `air` should arrive by air, and the same for `sea`, `land` and `space`. If you can draw the
+flies a helicopter from its helipad and sails a ferry from its pier; another island may fly a jet or a balloon. A
+traveller who left by `air` should arrive by air, and the same for `sea` and `space`. If you can draw the
 vehicle they came in (`via`, §9), show that one; otherwise show your own vehicle for the mode.
 
 ## 2. Departures
@@ -144,12 +144,13 @@ and MUST be skipped when the visitor prefers reduced motion. Offer a plain "go n
 
 ## 3. Arrivals
 
-On page load, an island that has an airport, harbour, station or launch pad SHOULD read `from`, `by` and `via` from
+On page load, an island that has an airport, harbour or launch pad SHOULD read `from`, `by` and `via` from
 its address:
 
 - `from` MUST be checked: it has to be an `https:` URL (or `http://localhost`). Use only its origin and path.
-- `by` is `air`, `sea`, `land` or `space`; a vehicle name means its mode (`helicopter` = air, `train` = land). Without
-  `by`, use the mode of `via`; anything else counts as `air`. (A 1.0 or 1.1 reader treats `land` and `space` as air.)
+- `by` is `air`, `sea` or `space`; a vehicle name means its mode (`helicopter` = air, `ferry` = sea). Without `by`,
+  use the mode of `via`; anything else counts as `air`, including `land` from 1.2 links. (A 1.0 or 1.1 reader treats
+  `space` as air.)
 - `via` (1.2) is the vehicle: a lowercase slug of up to 32 characters, else ignore it. If it is a suggested vehicle of a
   different mode, ignore it. Draw it if you can, otherwise your own vehicle for `by`.
 - Look the origin up in your own `routes` (same origin, path under the route's path).
@@ -161,17 +162,17 @@ its address:
   again.
 - Do not store, log or send these parameters anywhere.
 
-The landing MAY be animated (a helicopter touching down, a ferry docking, a train pulling in) under the same rules as
+The landing MAY be animated (a helicopter touching down, a ferry docking, a rocket landing) under the same rules as
 departures. A return trip SHOULD use the vehicle the traveller came in, unless your route names its own.
 
-## 4. Showing the airport, harbour, station and launch pad
+## 4. Showing the airport, harbour and launch pad
 
 Island Passport doesn't prescribe the art. Some conventions that keep islands feeling connected:
 
 - A place on the map for each way you travel: a runway, a helipad or a balloon field for air; a harbour with a boat
-  at a dock for sea; a station or a bus stop for land; a launch pad for space. For example **Helipad & Harbour /
+  at a dock for sea; a launch pad for space. For example **Helipad & Harbour /
   直升機坪與港口**.
-- A **departures board** that lists `routes`: a mark for the vehicle (✈️ 🚁 ⛴️ ⛵ 🚆 🚀 …), the destination name, owner
+- A **departures board** that lists `routes`: a mark for the vehicle (✈️ 🚁 🎈 ⛴️ ⛵ 🚀 …), the destination name, owner
   and one line, and a "Depart" link. Flight numbers and times are welcome decoration.
 - Air for other people's islands, sea for your own sites or for plain websites.
 - When a traveller arrives, show the vehicle bringing them in: theirs (`via`) if you can draw it, else your own for `by`.
@@ -191,7 +192,8 @@ Island Passport doesn't prescribe the art. Some conventions that keep islands fe
 
 ## 6. Versioning
 
-This is version `1.2` (1.1 plus vehicles and the `land` and `space` modes; 1.1 added traveller cards). Later `1.x` versions only add optional fields; readers of `1.0` MUST accept them and ignore
+This is version `1.3`. 1.1 added traveller cards; 1.2 added vehicles and the `space` mode; 1.3 removed the `land` mode
+that 1.2 briefly had, because islands are surrounded by water (readers treat `land` as `air`, and validators warn). Later `1.x` versions only add optional fields; readers of `1.0` MUST accept them and ignore
 what they don't know. A breaking change would be `2.0`.
 
 ## 7. Minimal example
@@ -318,11 +320,9 @@ Any lowercase slug (`a-z`, `0-9`, `-`, up to 32 characters) is allowed. These ar
 |---|---|
 | `air` | `plane`, `jet`, `helicopter`, `seaplane`, `balloon`, `airship`, `glider` |
 | `sea` | `boat`, `ferry`, `sailboat`, `speedboat`, `yacht`, `ship`, `canoe`, `submarine` |
-| `land` | `train`, `tram`, `bus`, `car`, `bicycle`, `scooter`, `cablecar`, `walk` |
 | `space` | `rocket`, `ufo` |
 
-Each mode has an everyday vehicle that islands fall back to: `plane` (air), `boat` (sea), `train` (land), `rocket`
-(space). `passport-core.js` exports the list with marks and labels (`VEHICLES`, `vehicleMark`, `vehicleLabel`), and
+Each mode has an everyday vehicle that islands fall back to: `plane` (air), `boat` (sea), `rocket` (space). `passport-core.js` exports the list with marks and labels (`VEHICLES`, `vehicleMark`, `vehicleLabel`), and
 `three-harbor.js` has low-poly models and paths for each (`makeVehicle`, `departPath`, `arrivePath`).
 
 - Departures add `via=<vehicle>` (§2). Arrivals read it (§3) and draw that vehicle if they can.

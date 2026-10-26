@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 (2026-10-26)
+
+- Removed the `land` mode and its vehicles (train, tram, bus, car, bicycle, scooter, cable car, walking): islands are
+  surrounded by water, so travel is by air, sea or space. Readers treat `by=land` as air; the validator warns about
+  `"by": "land"` and `ports.land`. `three-harbor.js` no longer has `makeTrain` and `makeCar`.
+
 ## 1.2.1 (2026-10-26)
 
 - Examples, tests and docs use fictional islands (`lighthouse-island.example`, `comet-island.example`) only;
@@ -10,7 +16,7 @@
 - Any vehicle (SPEC.md §9): routes may name a `vehicle` (`helicopter`, `jet`, `balloon`, `ferry`, `sailboat`, `train`,
   `bus`, `rocket`, `ufo`… or any slug). Departures add `via=<vehicle>`; arrivals draw it if they can, otherwise their
   own vehicle for the mode. `ports.vehicles` lists what an island can draw.
-- Two new modes: `land` (stations, bus stops) and `space` (launch pads). Older readers treat them as air.
+- Two new modes: `land` (stations, bus stops; removed in 1.3) and `space` (launch pads). Older readers treat them as air.
 - `passport-core.js`: `VEHICLES`, `DEFAULT_VEHICLE`, `vehicleOf`, `modeOf`, `vehicleMark`, `vehicleLabel`; arrivals return
   `vehicle`; the validator checks vehicles and modes. Templates may use `{via}`.
 - `three-harbor.js`: jet, balloon, airship, sailboat, train, car, bus, rocket and UFO models; `makeVehicle`,

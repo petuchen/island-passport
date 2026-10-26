@@ -1,7 +1,7 @@
 // Island Passport drop-in harbour for any website (no 3D needed).
 //   <script type="module" src="/harbor/harbor.js" data-passport="/island.json"></script>
 // Adds a small "✈ Routes" button, a departures board drawn from your passport's routes, the route's vehicle (plane, boat,
-// train, rocket…) crossing the screen when someone departs, and a welcome card when a traveller arrives from another island.
+// balloon, rocket…) crossing the screen when someone departs, and a welcome card when a traveller arrives from another island.
 // Optional attributes: data-lang="zh-Hant" | "en" (default: <html lang>), data-position="bottom-right" | "bottom-left",
 // data-label="…" (button text), data-button="none" (no floating button; call IslandHarbor.open() yourself).
 // No network requests besides your own passport; nothing stored. A traveller card (1.1) that arrives is used for the
@@ -13,13 +13,13 @@ const cfg = { passport: me?.dataset.passport || "/island.json", lang: me?.datase
   position: me?.dataset.position || "bottom-right", label: me?.dataset.label || "", button: me?.dataset.button !== "none" };
 const zh = /^zh/i.test(cfg.lang);
 const T = zh
-  ? { routes: "航線", board: "出發航班", close: "關閉", depart: "出發", air: "空路", sea: "海路", land: "陸路", space: "太空", site: "網站", now: "直接前往",
-      going: (n, by) => ({ air: `飛往 ${n}…`, sea: `開往 ${n}…`, land: `前往 ${n}…`, space: `發射前往 ${n}…` })[by] || `前往 ${n}…`,
-      welcome: (n, by, mark, v) => `${mark} 歡迎從「${n}」${({ air: "飛", sea: "搭船", land: v === "步行" ? "走路" : `搭${v}`, space: "坐火箭" })[by] || ""}來！`, stranger: (h) => `歡迎來自 ${h} 的旅客！`, back: "回程", stay: "逛逛這裡",
+  ? { routes: "航線", board: "出發航班", close: "關閉", depart: "出發", air: "空路", sea: "海路", space: "太空", site: "網站", now: "直接前往",
+      going: (n, by) => ({ air: `飛往 ${n}…`, sea: `開往 ${n}…`, space: `發射前往 ${n}…` })[by] || `前往 ${n}…`,
+      welcome: (n, by, mark) => `${mark} 歡迎從「${n}」${({ air: "飛", sea: "搭船", space: "坐火箭" })[by] || ""}來！`, stranger: (h) => `歡迎來自 ${h} 的旅客！`, back: "回程", stay: "逛逛這裡",
       empty: "還沒有航線。", foot: "Island Passport：用 /island.json 讓小島互相連結。" }
-  : { routes: "Routes", board: "Departures", close: "Close", depart: "Depart", air: "By air", sea: "By sea", land: "By land", space: "To space", site: "Website", now: "Go now",
-      going: (n, by) => ({ air: `Flying to ${n}…`, sea: `Sailing to ${n}…`, land: `Heading to ${n}…`, space: `Launching to ${n}…` })[by] || `Heading to ${n}…`,
-      welcome: (n, by, mark) => `${mark} Welcome! You ${({ air: "flew", sea: "sailed", land: "travelled", space: "rocketed" })[by] || "came"} in from ${n}.`, stranger: (h) => `Welcome, traveller from ${h}!`, back: "Return trip", stay: "Look around",
+  : { routes: "Routes", board: "Departures", close: "Close", depart: "Depart", air: "By air", sea: "By sea", space: "To space", site: "Website", now: "Go now",
+      going: (n, by) => ({ air: `Flying to ${n}…`, sea: `Sailing to ${n}…`, space: `Launching to ${n}…` })[by] || `Heading to ${n}…`,
+      welcome: (n, by, mark) => `${mark} Welcome! You ${({ air: "flew", sea: "sailed", space: "rocketed" })[by] || "came"} in from ${n}.`, stranger: (h) => `Welcome, traveller from ${h}!`, back: "Return trip", stay: "Look around",
       empty: "No routes yet.", foot: "Island Passport: islands linked by /island.json." };
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -69,7 +69,7 @@ async function load() {
 
 function board() {
   const p = passport, rows = (p.routes || []).map((r, i) => {
-    const by = modeOf(r), veh = vehicleOf(r), mark = vehicleMark(veh, by), color = /^#[0-9a-f]{6}$/i.test(r.color || "") ? r.color : ({ sea: "#2C7A80", land: "#7A9E4F", space: "#5B5F97" })[by] || "#DB6A41";
+    const by = modeOf(r), veh = vehicleOf(r), mark = vehicleMark(veh, by), color = /^#[0-9a-f]{6}$/i.test(r.color || "") ? r.color : ({ sea: "#2C7A80", space: "#5B5F97" })[by] || "#DB6A41";
     const kind = (r.kind || "island") === "site" ? T.site : r.vehicle ? `${T[by]} · ${vehicleLabel(veh, cfg.lang)}` : T[by];
     return `<div class="iph-row"><span class="iph-pc" style="background:${color}" aria-hidden="true">${mark}</span>
       <span><b>${esc(name(r))}</b><small>${esc([kind, text(r.owner, cfg.lang)].filter(Boolean).join(" · "))}</small>${r.description ? `<small>${esc(text(r.description, cfg.lang))}</small>` : ""}${categoriesOf(r).length ? `<span class="iph-cats">${categoriesOf(r).map((c) => `<i>${esc(categoryLabel(c, cfg.lang))}</i>`).join("")}</span>` : ""}</span>
@@ -99,8 +99,8 @@ export async function depart(i) {
   await load();
   const r = passport.routes[i], by = modeOf(r), url = departUrl(r, passport.url, by, { traveller: visitor }); close();
   if (reduced()) return location.assign(url);
-  /* the vehicle crosses the screen: air and space climb away, sea and land stay low */
-  const fly = document.createElement("div"); fly.className = "iph-fly" + (by === "sea" || by === "land" ? " iph-sail" : by === "space" ? " iph-launch" : ""); fly.textContent = vehicleMark(vehicleOf(r), by); fly.setAttribute("aria-hidden", "true");
+  /* the vehicle crosses the screen: air and space climb away, sea stays low */
+  const fly = document.createElement("div"); fly.className = "iph-fly" + (by === "sea" ? " iph-sail" : by === "space" ? " iph-launch" : ""); fly.textContent = vehicleMark(vehicleOf(r), by); fly.setAttribute("aria-hidden", "true");
   const veil = document.createElement("div"); veil.className = "iph-veil"; veil.setAttribute("role", "status");
   veil.innerHTML = `<span>${esc(T.going(name(r), by))}</span><a href="${esc(url)}">${T.now}</a>`;
   document.body.append(fly, veil); setTimeout(() => location.assign(url), 1700);
@@ -114,7 +114,7 @@ export async function arrive() {
   const hi = document.createElement("div"); hi.className = "iph-hi"; hi.setAttribute("role", "status");
   const back = returnUrl(a, p);
   const who = a.traveller?.name ? (zh ? `${a.traveller.name}，` : `${a.traveller.name}! `) : "";
-  hi.innerHTML = `<span>${esc(who + (a.route ? T.welcome(name(a.route), a.by, vehicleMark(a.vehicle, a.by), vehicleLabel(a.vehicle, cfg.lang)) : T.stranger(a.host)))}</span>${back ? `<a href="${esc(back)}">↩ ${T.back}</a>` : ""}<button type="button">${T.stay}</button>`;
+  hi.innerHTML = `<span>${esc(who + (a.route ? T.welcome(name(a.route), a.by, vehicleMark(a.vehicle, a.by)) : T.stranger(a.host)))}</span>${back ? `<a href="${esc(back)}">↩ ${T.back}</a>` : ""}<button type="button">${T.stay}</button>`;
   hi.querySelector("button").addEventListener("click", () => hi.remove());
   document.body.append(hi); setTimeout(() => hi.remove(), 20000);
   return a;
